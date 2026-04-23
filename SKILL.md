@@ -42,7 +42,14 @@ Evaluate each section of a 104 resume with **weighted section scores** — each 
 
 ## Step 1: Collect the Resume
 
-Ask the user to paste their resume content. If they provide a target job description (JD), collect that too — it enables keyword gap analysis.
+請用戶上傳 **104 履歷 PDF**（從 104 個人會員頁面下載）。
+
+收到 PDF 後，解析所有可見區塊內容。接著詢問兩個問題（可同時問）：
+
+1. **目標職缺：** 有沒有想投遞的職缺連結或 JD 內容？（有的話可做關鍵字 Gap 分析）
+2. **候選人背景：** 目前是應屆/新鮮人、有工作經驗、還是正在轉職中？
+
+若用戶無法提供 PDF，接受純文字貼上，但告知分析準確度可能略低（部分 104 欄位格式資訊會遺失）。
 
 ---
 
@@ -358,7 +365,7 @@ Key constraints: 中文 ≤4000 chars，英文 ≤8000 chars。
 
 ## Step 3: Optimization Suggestions
 
-每個**達成率低於 75%** 的區塊，至少提供 2 條具體建議：
+每個**達成率低於 75%** 的區塊，至少提供 2 條具體建議，並在工作經歷/專案成就的建議中附上 XYZ 改寫示範。
 
 ```
 ### [區塊名稱] — X/滿分Y（達成率 Z%）
@@ -369,11 +376,28 @@ Key constraints: 中文 ≤4000 chars，英文 ≤8000 chars。
 **建議 2：** [具體行動]
 ```
 
-### Common High-Impact Optimizations
+### Achievement Rewrite: Google XYZ Formula
 
-**工作經歷 — 任務型 → 成果型:**
-- Before: "負責社群媒體管理"
-- After: "管理 FB/IG 雙平台，3 個月內自然觸及提升 40%，追蹤人數成長 2,000+"
+工作經歷與專案成就的每條任務型描述，必須套用 XYZ 公式改寫：
+
+> **Accomplished [X] as measured by [Y], by doing [Z]**
+> 中文版：「透過 [Z 方法]，達成 [X 成果]，以 [Y 指標] 衡量」
+
+**改寫流程：**
+1. 識別原句是「任務型」（負責 / 參與 / 協助）還是「成果型」（提升 / 降低 / 達成）
+2. 任務型 → 詢問用戶：「這件事帶來什麼具體成果？有沒有數字？」
+3. 若用戶提供數字 → 直接套入 XYZ 公式輸出改寫版
+4. 若用戶無法提供數字 → 用「估算範圍」替代，並標注 `[待補數字]`
+
+**改寫範例：**
+
+| 原句（任務型） | 改寫後（XYZ 成果型） |
+|--------------|-------------------|
+| 負責社群媒體管理 | 管理 FB/IG 雙平台內容策略，3 個月自然觸及提升 40%、追蹤人數成長 2,000+，透過發文頻率優化與 UGC 活動執行 |
+| 協助行銷預算規劃 | 優化月均 $50k 行銷預算配置，CPA 降低 15% 同時導流量成長 20%，透過 A/B 測試調整渠道比例達成 |
+| 參與客戶服務流程改善 | 推動客服 SOP 重新設計，首次解決率從 62% 提升至 81%，透過客訴分類分析找出 Top 5 重複問題並建立標準回覆庫 |
+
+### Common High-Impact Optimizations
 
 **個人特色 — 從通用到精準:**
 - Weak: 積極、負責、細心
