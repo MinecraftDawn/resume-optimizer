@@ -96,6 +96,8 @@ Load `references/suggestions.md` now. (`references/104-format.md` is already loa
 
 For every section with achievement rate < 75%, provide ≥ 2 specific suggestions. For work experience and projects, always include XYZ formula rewrites.
 
+若目標職缺為中大型企業或外商，執行 `references/suggestions.md` 中「ATS 相容性 Checklist」，並將有問題的項目加入 Step 5 的行動清單（但不計入評分表）。
+
 When giving suggestions, reference the **充足標準** from `references/104-format.md` to give field-level specifics — e.g., "你的工作技能目前只有 1 組，建議補充到 3–4 組，例如可以加上 [具體工具]" — rather than generic "add more content" advice. The goal is to help users understand what "enough" looks like so they don't over-fill or under-fill.
 
 If a JD was provided, run the **Keyword Gap Analysis** defined in `references/suggestions.md`.
