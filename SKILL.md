@@ -19,6 +19,8 @@ Load these files on demand — do NOT load all at once:
 | `references/scoring.md` | Entering Step 2 (always load) | Per-section rubrics, scoring formulas, factor tables |
 | `references/suggestions.md` | Entering Step 3 (always load) | XYZ rewrite formula, JD keyword gap analysis, common high-impact fixes |
 | `references/output-format.md` | Entering Step 4 (always load) | Full report template, scoring table, ordering templates, status icons, action checklist format |
+| `references/salary-benchmarks.md` | Step 2 且求職條件含薪資期望 | 台灣各職類月薪基準，依職類與年資查詢 |
+| `references/industry-profiles.md` | Step 2 且目標職缺產業可識別 | 產業別高價值關鍵字清單與評分側重調整 |
 | `references/linkedin-mode.md` | User requests LinkedIn optimization | Headline/About/Experience/Skills format for LinkedIn |
 
 ---
@@ -80,6 +82,7 @@ Load `references/104-format.md` now.
 
 Load `references/scoring.md` now.
 若求職條件中有薪資期望，同時載入 `references/salary-benchmarks.md` 查詢對應職類基準。
+若 Step 1 的目標職缺屬於可識別產業（科技/行銷/設計/財務/人資/業務），同時載入 `references/industry-profiles.md` 中對應的產業區塊，並在 Step 3 建議中優先使用該產業的高價值關鍵字清單。
 
 Score every section present using section-specific max scores. Apply Missing Section Audit results directly.
 
