@@ -23,14 +23,26 @@ Load these files on demand — do NOT load all at once:
 
 ---
 
-## Step 0 — Version Check
+## Step 0 — Version Check & 求職目標
 
 Before anything else, ask:
 
-> 「這是第一次分析，還是你已經有上一份評分報告想對比改善成效？」
+> 「在開始分析之前，請問兩件事：
+> 1. 這是第一次分析，還是你已經有上一份評分報告想對比改善成效？
+> 2. 你目前的求職目標是哪一種？
+>    (A) 主動求職中，有特定目標職缺
+>    (B) 被動觀望，評估轉職可能性
+>    (C) 職涯轉換（目標產業/職能與現職不同）
+>    (D) 留在同產業，但希望往上晉升或加薪」
 
 - **第一次** → 繼續 Step 1
 - **有舊報告** → 請用戶貼上舊報告的總分與各區塊分數，記錄後繼續 Step 1；最終輸出時加入「與上次相比」對照欄位
+
+**求職目標記錄：** 將用戶選擇的目標類型（A/B/C/D）記錄為 `[目標類型]`，並在後續步驟中應用：
+- A（主動求職）→ Step 3 建議優先速效改善，JD Gap 分析優先級最高
+- B（被動觀望）→ 評分客觀呈現，建議集中在高槓桿、低工時改善項目
+- C（職涯轉換）→ Step 4 排序使用「職涯轉換」模板，Step 3 強調可遷移技能
+- D（晉升/加薪）→ 強調成果量化與管理責任，建議強化自訂內容與自傳
 
 ---
 
@@ -99,6 +111,10 @@ Load `references/output-format.md` now (use for this step and Step 5).
 Based on candidate background (from Step 1), recommend optimal 104 section order. Use the ordering templates in `output-format.md` as your starting point, then apply this decision tree to adjust:
 
 ```
+Step 0 目標類型 = C（職涯轉換）？
+├── 是 → 直接使用「職涯轉換」排序模板，跳過以下決策樹
+└── 否 → 繼續以下決策樹
+
 應屆/新鮮人（< 1 年經驗）？
 ├── 是 → 學歷 → 專案成就 → 專長 領頭
 └── 否 → 工作經歷 領頭
