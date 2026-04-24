@@ -50,7 +50,7 @@
 
 ### 方式一：Claude 桌面版 / 網頁版（最簡單）
 
-1. 下載本 repo 的 [ZIP 檔案](https://github.com/your-repo/archive/refs/heads/main.zip)
+1. 下載本 repo 的 [ZIP 檔案](https://github.com/MinecraftDawn/resume-optimizer/archive/refs/heads/main.zip)
 2. 開啟 Claude 桌面版或 [claude.ai](https://claude.ai)
 3. 進入 **Customize → Skills → + → Create skill → Upload a skill**
 4. 上傳下載的 ZIP 檔即完成
@@ -59,7 +59,7 @@
 
 ```bash
 # Clone 此 repo
-git clone <repo-url> resume-optimizer
+git clone https://github.com/MinecraftDawn/resume-optimizer.git resume-optimizer
 cd resume-optimizer
 
 # 將 SKILL.md 與 references/ 複製到 Claude Code plugin 目錄
