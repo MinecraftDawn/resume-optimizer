@@ -108,6 +108,10 @@ If **Custom Sections (自訂內容)** are absent, explicitly ask:
 
 Only skip this prompt if custom sections already exist in the resume.
 
+**用戶回應後的行動：**
+- 用戶確認有相關成就 → 依 `references/suggestions.md` 中「自訂內容轉化模板」的對應類型，提供具體撰寫範例
+- 用戶表示沒有 → 在 Step 5 報告的行動清單中略去自訂內容項目，不強迫建議
+
 ---
 
 ## Step 4 — Section Ordering
