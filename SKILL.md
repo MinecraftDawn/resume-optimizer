@@ -15,6 +15,7 @@ Load these files on demand — do NOT load all at once:
 
 | File | Load when | Contains |
 |------|-----------|----------|
+| `references/104-format.md` | Entering Step 1 (always load) | All 104 section fields, character limits, "充足標準" per section, quick checklist |
 | `references/scoring.md` | Entering Step 2 (always load) | Per-section rubrics, scoring formulas, factor tables |
 | `references/suggestions.md` | Entering Step 3 (always load) | XYZ rewrite formula, JD keyword gap analysis, common high-impact fixes |
 | `references/output-format.md` | Entering Step 4 (always load) | Full report template, scoring table, ordering templates, status icons, action checklist format |
@@ -35,6 +36,8 @@ Before anything else, ask:
 
 ## Step 1 — Collect the Resume
 
+Load `references/104-format.md` now.
+
 請用戶上傳 **104 履歷 PDF**（從 104 個人會員頁面下載）。若無法提供 PDF，接受純文字貼上。
 
 收到履歷後，**先跑 Missing Section Audit**（見下方），再詢問兩個問題（可同時問）：
@@ -44,15 +47,17 @@ Before anything else, ask:
 
 ### Missing Section Audit
 
-解析履歷後，立刻清點 104 標準欄位的存在狀況。對每個**缺失且有潛在價值**的區塊，記錄下來並在 Step 3 建議中說明是否值得補充。
+解析履歷後，依據 `references/104-format.md` 的欄位清單與「充足標準」，清點每個區塊的**存在狀態**與**內容充足度**。
 
-**缺失處理規則：**
+充足度的判斷以「有效內容是否達到充足門檻」為準，不是「有沒有填滿上限」——例如專案成就有 2 筆深度描述就算充足，不需要填滿 6 筆。
+
+**缺失/不足處理規則：**
 
 | 情境 | 評分處理 | Step 3 行動 |
 |------|---------|------------|
 | 區塊完全缺失，且目標職位明確需要（如技術職缺缺附件） | 給 0 分，標記 ❌ 嚴重缺口 | 列為最高優先建議 |
 | 區塊完全缺失，但屬可選項（如推薦人） | 給 0 分，標記 ⚪ 可補充 | 若分析後有增值，建議補充 |
-| 區塊存在但內容極少（< 50 字 / 僅標題無內容） | 按質量評分，通常 0–2 分 | 標記 ⚠️ 內容不足 |
+| 區塊存在但未達充足標準（如描述過短、標籤太少） | 按實際質量評分 | 標記 ⚠️ 內容不足，Step 3 給具體補充建議 |
 | 資訊不足以評估（文字截斷或 PDF 解析失敗） | 標記 ❓ 無法評估，跳過此區塊 | 提示用戶補提供內容 |
 
 **如果超過 4 個主要區塊（工作經歷、專長、基本資料、學歷、自傳）標記為 ❓**，暫停分析，告知用戶：「目前履歷資訊不足以進行完整評分，建議提供更完整的內容或 PDF 原檔。」
@@ -71,9 +76,11 @@ Score every section present using section-specific max scores. Apply Missing Sec
 
 ## Step 3 — Optimization Suggestions
 
-Load `references/suggestions.md` now.
+Load `references/suggestions.md` now. (`references/104-format.md` is already loaded.)
 
 For every section with achievement rate < 75%, provide ≥ 2 specific suggestions. For work experience and projects, always include XYZ formula rewrites.
+
+When giving suggestions, reference the **充足標準** from `references/104-format.md` to give field-level specifics — e.g., "你的工作技能目前只有 1 組，建議補充到 3–4 組，例如可以加上 [具體工具]" — rather than generic "add more content" advice. The goal is to help users understand what "enough" looks like so they don't over-fill or under-fill.
 
 If a JD was provided, run the **Keyword Gap Analysis** defined in `references/suggestions.md`.
 
