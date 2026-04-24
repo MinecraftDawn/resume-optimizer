@@ -46,11 +46,16 @@
 
 ## 安裝方式
 
-### 前置需求
+此 Skill 支援三種安裝方式，依你使用的 Claude 版本選擇。
 
-- [Claude Code](https://claude.ai/code) CLI 已安裝並登入
+### 方式一：Claude 桌面版 / 網頁版（最簡單）
 
-### 方式一：從本 repo 安裝（推薦）
+1. 下載本 repo 的 [ZIP 檔案](https://github.com/your-repo/archive/refs/heads/main.zip)
+2. 開啟 Claude 桌面版或 [claude.ai](https://claude.ai)
+3. 進入 **Customize → Skills → + → Create skill → Upload a skill**
+4. 上傳下載的 ZIP 檔即完成
+
+### 方式二：Claude Code CLI（從本 repo 安裝）
 
 ```bash
 # Clone 此 repo
@@ -58,17 +63,14 @@ git clone <repo-url> resume-optimizer
 cd resume-optimizer
 
 # 將 SKILL.md 與 references/ 複製到 Claude Code plugin 目錄
-# 路徑依你的系統而異，通常在：
-# ~/.claude/plugins/<your-plugin-name>/skills/
-
 mkdir -p ~/.claude/plugins/resume-optimizer/skills/resume-optimizer
 cp SKILL.md ~/.claude/plugins/resume-optimizer/skills/resume-optimizer/
 cp -r references/ ~/.claude/plugins/resume-optimizer/skills/resume-optimizer/
 ```
 
-### 方式二：手動建立 Skill
+### 方式三：Claude Code CLI（整合至現有 Plugin）
 
-若你已有自己的 Claude Code plugin，把 `SKILL.md` 放入對應的 `skills/` 目錄即可，`references/` 資料夾必須與 `SKILL.md` 同層。
+若你已有自己的 Claude Code plugin，把 `SKILL.md` 與 `references/` 資料夾放入對應的 `skills/` 目錄即可，兩者必須同層。
 
 ```
 your-plugin/
@@ -80,18 +82,20 @@ your-plugin/
             ├── scoring.md
             ├── suggestions.md
             ├── output-format.md
+            ├── salary-benchmarks.md
+            ├── industry-profiles.md
             └── linkedin-mode.md
 ```
 
 ### 驗證安裝成功
 
-開啟新的 Claude Code 對話，輸入：
+安裝後開啟新對話，輸入：
 
 ```
 /resume-optimizer
 ```
 
-若 Skill 載入成功，Claude 會詢問你這是第一次分析還是有舊版報告要比對。
+或直接說「幫我看履歷」、上傳履歷 PDF，Skill 會自動啟動。
 
 ---
 
