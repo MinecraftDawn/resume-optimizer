@@ -79,6 +79,7 @@ Load `references/104-format.md` now.
 ## Step 2 — Score Each Section
 
 Load `references/scoring.md` now.
+若求職條件中有薪資期望，同時載入 `references/salary-benchmarks.md` 查詢對應職類基準。
 
 Score every section present using section-specific max scores. Apply Missing Section Audit results directly.
 
