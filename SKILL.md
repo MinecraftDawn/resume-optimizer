@@ -1,508 +1,118 @@
 ---
 name: resume-optimizer
-description: Use when a user shares a 104 resume (履歷) and wants it reviewed, scored, or optimized. Triggers on: 104履歷, 履歷優化, 幫我看履歷, resume review for Taiwan job market, 104 Job Bank profile. Also applicable to LinkedIn profile optimization as a secondary mode.
+description: Use whenever a user shares or describes a 104 履歷 (resume) and wants it reviewed, scored, or improved — even if they only paste a fragment or describe it verbally. Triggers on: 104履歷, 履歷優化, 幫我看履歷, 履歷分析, 履歷打分, resume review Taiwan, 104 profile, 幫我改履歷, 我的履歷怎麼樣. Also applies to LinkedIn profile optimization as a secondary mode. Use this skill proactively whenever any resume content appears in the conversation, even without an explicit request for scoring.
 ---
 
-# Resume Optimizer
+# Resume Optimizer — 104 台灣市場
 
-## Overview
-
-Evaluate each section of a 104 resume with **weighted section scores** — each section's max score reflects its real hiring impact in the Taiwan 104 market. Provide specific optimization suggestions and recommend an optimal section ordering.
-
----
-
-## Scoring Architecture
-
-**總分：100 分（＋自訂內容最高加 3 分）**
-
-每個區塊的滿分依據對「實際篩選結果」的影響力設定，而非平均分配。
-
-| 區塊 | 滿分 | 重要性 | 說明 |
-|------|------|--------|------|
-| 工作經歷 | 25 | ★★★★★ | 篩選主因；HR 花最多時間在此 |
-| 專長 | 15 | ★★★★ | 104 關鍵字搜尋引擎主要來源 |
-| 基本資料 | 10 | ★★★★ | 第一印象 ＋ 個人簡介鉤子 |
-| 學歷 | 10 | ★★★ | 台灣職場硬門檻 |
-| 求職條件 | 8 | ★★★ | 自我認知與市場校準 |
-| 自傳 | 8 | ★★★ | 差異化敘事 |
-| 專案成就 | 8 | ★★★ | 工作經歷的具體佐證 |
-| 軟實力綜合 | 6 | ★★★ | 跨區塊量化密度與硬實力比例（獨立評估） |
-| 證照 | 4 | ★★ | 職務相依；技術/金融/法律職缺權重 ×3 |
-| 語文能力 | 3 | ★★ | 外商/跨國職缺權重 ×3 |
-| 附件 | 2 | ★★ | 設計/工程職缺權重 ×3 |
-| 推薦人 | 1 | ★ | 台灣市場初篩影響力低 |
-| 自訂內容 | +3 | ★★ | 加分項，不計入基礎總分 |
-| **合計** | **100** | | |
-
-> **職位加權說明：** 標示「×3」的欄位表示，若目標職缺明確需要該項目，在最終建議優先序中應特別強調，即使分數絕對值偏低。
-
-**Critical rule:** Score based on QUALITY and CREDIBILITY, not whether fields are filled. Read actual content before assigning any score.
+Evaluate a 104 resume with **weighted section scores** reflecting real hiring impact in Taiwan. Produce specific optimization suggestions, XYZ achievement rewrites, JD keyword gap analysis, and an optimal section ordering.
 
 ---
 
-## Step 1: Collect the Resume
+## Reference Files
 
-請用戶上傳 **104 履歷 PDF**（從 104 個人會員頁面下載）。
+Load these files on demand — do NOT load all at once:
 
-收到 PDF 後，解析所有可見區塊內容。接著詢問兩個問題（可同時問）：
-
-1. **目標職缺：** 有沒有想投遞的職缺連結或 JD 內容？（有的話可做關鍵字 Gap 分析）
-2. **候選人背景：** 目前是應屆/新鮮人、有工作經驗、還是正在轉職中？
-
-若用戶無法提供 PDF，接受純文字貼上，但告知分析準確度可能略低（部分 104 欄位格式資訊會遺失）。
-
----
-
-## Step 2: Score Each Section
-
-Score every section present using the section-specific max. For missing optional sections, note whether adding them would add value.
+| File | Load when | Contains |
+|------|-----------|----------|
+| `references/scoring.md` | Entering Step 2 (always load) | Per-section rubrics, scoring formulas, factor tables |
+| `references/suggestions.md` | Entering Step 3 (always load) | XYZ rewrite formula, JD keyword gap analysis, common high-impact fixes |
+| `references/output-format.md` | Entering Step 4 (always load) | Full report template, scoring table, ordering templates, status icons, action checklist format |
+| `references/linkedin-mode.md` | User requests LinkedIn optimization | Headline/About/Experience/Skills format for LinkedIn |
 
 ---
 
-### 基本資料 (Basic Info) — 滿分 10
+## Step 0 — Version Check
 
-評估各子欄位內容質量，非填寫與否。
+Before anything else, ask:
 
-**個人簡介（權重 40%，內部評分 0–10）：**
-| 分數 | 標準 |
-|------|------|
-| 9–10 | 職務導向，含具體技能/產業/年資，第一句是鉤子（例："5年電商行銷，專注 SEO 與 CRM"） |
-| 6–8 | 有內容但通用，缺乏差異化，任何同領域候選人都能套用 |
-| 3–5 | 純軟實力宣言（熱愛挑戰、積極學習）無具體化 |
-| 0–2 | 空白或一句話 |
+> 「這是第一次分析，還是你已經有上一份評分報告想對比改善成效？」
 
-**個人特色（權重 40%，內部評分 0–10，共 6 個標籤格）：**
-| 分數 | 標準 |
-|------|------|
-| 9–10 | 6 個標籤全填；以硬技能/產業關鍵字為主（Python、B2B 銷售、專案管理） |
-| 6–8 | 4–5 個標籤，硬軟混合 |
-| 3–5 | 全是軟實力標籤（積極、負責、細心）—零搜尋價值 |
-| 0–2 | 少於 3 個或全部通用 |
-
-**個人連結（權重 20%，內部評分 0–10）：**
-| 分數 | 標準 |
-|------|------|
-| 9–10 | 連結與職務相關（工程師→GitHub，設計師→Behance），連結有效且更新 |
-| 6–8 | 有連結但部分失效或不相關 |
-| 0–5 | 無連結（技術/創意職缺嚴重不足） |
-
-**最終分：** `(簡介×0.4 + 特色×0.4 + 連結×0.2) / 10 × 10`
+- **第一次** → 繼續 Step 1
+- **有舊報告** → 請用戶貼上舊報告的總分與各區塊分數，記錄後繼續 Step 1；最終輸出時加入「與上次相比」對照欄位
 
 ---
 
-### 學歷 (Education) — 滿分 10
+## Step 1 — Collect the Resume
 
-三因子組合。**先讀完所有因子再評分。**
+請用戶上傳 **104 履歷 PDF**（從 104 個人會員頁面下載）。若無法提供 PDF，接受純文字貼上。
 
-**Factor 1 — 學位上限：**
-| 學歷 | 分數上限 |
-|------|---------|
-| 博士 | 10 |
-| 碩士 | 9 |
-| 學士（4 年制） | 8 |
-| 四技/二技（科技大學） | 7 |
-| 專科（5/2 年制） | 6 |
-| 高中/高職 | 5 |
+收到履歷後，**先跑 Missing Section Audit**（見下方），再詢問兩個問題（可同時問）：
 
-**Factor 2 — 學校聲望調整：**
-| 等級 | 代表學校 | 調整 |
-|------|---------|------|
-| S：頂尖國立 | 台大、清大、陽明交大、成大、政大 | +1.5 |
-| A：優質國立 | 師大、中山、中央、中興、台北大、台科大、北科大 | +0.5 |
-| B：知名私立/區域國立 | 輔大、淡江、東吳、文化、逢甲、中原、高科大 | +0 |
-| C：一般大學 | 其他私立院校 | −0.5 |
-| 海外 | QS 前 100 → +1.5；前 500 → +0.5；其他 → +0 | 依排名 |
+1. **目標職缺：** 有沒有想投遞的職缺連結或 JD 內容？（有的話做關鍵字 Gap 分析，見 `references/suggestions.md`）
+2. **候選人背景：** 應屆/新鮮人、有工作經驗、還是正在轉職？
 
-*注意：理工職缺中，台科大/北科大可視同 A+ 等級。*
+### Missing Section Audit
 
-**Factor 3 — 就學狀態係數：**
-| 狀態 | 係數 |
-|------|------|
-| 畢業 | ×1.0 |
-| 就學中（畢業日期明確） | ×0.9 |
-| 肄業 | ×0.7 |
+解析履歷後，立刻清點 104 標準欄位的存在狀況。對每個**缺失且有潛在價值**的區塊，記錄下來並在 Step 3 建議中說明是否值得補充。
 
-**計算：** `min(10, 學位上限 + 學校調整) × 狀態係數`
+**缺失處理規則：**
 
-範例：
-- 台大碩士畢業 → min(10, 9+1.5)×1.0 = 10
-- 逢甲大學畢業 → min(10, 8+0)×1.0 = 8
-- 中山大學就學中 → min(10, 8+0.5)×0.9 = 7.65 ≈ 7.5
-- 私立大學肄業 → min(10, 8−0.5)×0.7 = 5.25 ≈ 5
+| 情境 | 評分處理 | Step 3 行動 |
+|------|---------|------------|
+| 區塊完全缺失，且目標職位明確需要（如技術職缺缺附件） | 給 0 分，標記 ❌ 嚴重缺口 | 列為最高優先建議 |
+| 區塊完全缺失，但屬可選項（如推薦人） | 給 0 分，標記 ⚪ 可補充 | 若分析後有增值，建議補充 |
+| 區塊存在但內容極少（< 50 字 / 僅標題無內容） | 按質量評分，通常 0–2 分 | 標記 ⚠️ 內容不足 |
+| 資訊不足以評估（文字截斷或 PDF 解析失敗） | 標記 ❓ 無法評估，跳過此區塊 | 提示用戶補提供內容 |
+
+**如果超過 4 個主要區塊（工作經歷、專長、基本資料、學歷、自傳）標記為 ❓**，暫停分析，告知用戶：「目前履歷資訊不足以進行完整評分，建議提供更完整的內容或 PDF 原檔。」
 
 ---
 
-### 工作經歷 (Work Experience) — 滿分 25
+## Step 2 — Score Each Section
 
-評估完整職位內容，**非欄位填寫數量**。
+Load `references/scoring.md` now.
 
-| 評估維度 | 權重 | 內部評分 |
-|---------|------|---------|
-| 成果 vs 任務描述 | 40% | 0–10 |
-| 職涯成長脈絡 | 20% | 0–10 |
-| 工作技能標籤相關性 | 20% | 0–10 |
-| 管理責任 | 10% | 0–10 |
-| JD 關鍵字匹配（有JD才計） | 10% | 0–10 |
+Score every section present using section-specific max scores. Apply Missing Section Audit results directly.
 
-**成果 vs 任務（最重要）：**
-| 分數 | 標準 |
-|------|------|
-| 9–10 | 每條都有數字成果（"留存率從 60%→78%，年省 120 萬"） |
-| 6–8 | 成果與任務混合，部分有數字 |
-| 3–5 | 純任務清單（"負責撰寫報告、參加會議"），零衝擊佐證 |
-| 0–2 | 只有職稱與公司名 |
-
-**職涯成長脈絡：**
-| 分數 | 標準 |
-|------|------|
-| 9–10 | 清晰晉升路徑（Specialist → Lead → Manager），責任遞增 |
-| 6–8 | 橫向移動有說明，或自然成長可見 |
-| 3–5 | 跳槽頻繁（< 1 年/份）無說明，或明顯停滯 |
-| 0–2 | 只有一份工作且無脈絡 |
-
-**技能標籤相關性：**
-| 分數 | 標準 |
-|------|------|
-| 9–10 | 標籤精準對應職務內容且為可搜尋關鍵字 |
-| 6–8 | 相關但摻雜軟實力標籤稀釋搜尋度 |
-| 3–5 | 通用標籤或與職務不符 |
-| 0–2 | 無標籤 |
-
-**管理責任：** 若候選人聲稱資深/主管職位，卻無管理規模（人數、預算、範疇） → 紅旗，子項扣至 0。
-
-**最終分：** `(成果×0.4 + 脈絡×0.2 + 標籤×0.2 + 管理×0.1 + JD×0.1) / 10 × 25`
-
-Key constraints: 工作內容描述 ≤2000 chars/職位，工作技能 max 6 tags/職位。
+**Scoring constraint:** Score based on QUALITY and CREDIBILITY, not whether fields are filled. Read actual content before assigning any score.
 
 ---
 
-### 求職條件 (Job Preferences) — 滿分 8
+## Step 3 — Optimization Suggestions
 
-| 評估面向 | 標準（內部評分 0–10） |
-|---------|-------------------|
-| 薪資 vs 市場行情 | 9–10: 符合其年資/學歷台灣市場行情，或「面議」有強佐證；3–5: 高出市場 30%+ 無特殊技能；0–2: 空白 |
-| 期望職稱 vs 實際經歷 | 9–10: 職稱與年資相符；3–5: 明顯不符（2年資歷申請 Director） |
-| 期望工作內容 | 9–10: 闡述自己能帶來的價值，而非願望清單；6–8: 有內容但偏「我想要」；0–2: 空白 |
+Load `references/suggestions.md` now.
 
-**最終分：** `平均三個面向分 / 10 × 8`
+For every section with achievement rate < 75%, provide ≥ 2 specific suggestions. For work experience and projects, always include XYZ formula rewrites.
 
----
+If a JD was provided, run the **Keyword Gap Analysis** defined in `references/suggestions.md`.
 
-### 專長 (Expertise) — 滿分 15
+If **Custom Sections (自訂內容)** are absent, explicitly ask:
 
-**可信度交叉驗證（最重要）：**
-工作經歷或專案成就中，是否有支持此專長的具體證據？
-宣稱「數據分析專長」但全份履歷無任何資料工具出現 → 扣 2–3 分（可信度缺口）。
+> 「你有沒有學術發表、開源貢獻、演講、重大獎項、或有成效的側案（side project）？這些可以作為自訂內容加進履歷，最高可獲得 3 分加分，也是真正的差異化亮點。」
 
-**評分標準（內部評分 0–10）：**
-| 分數 | 標準 |
-|------|------|
-| 9–10 | 具體、可搜尋、符合業界術語（"Python 後端開發"、"Google Ads 投放"），有跨區塊佐證 |
-| 6–8 | 廣泛但合理（"數位行銷"），部分佐證 |
-| 3–5 | 模糊或複合詞（"業務相關"、"電腦技能"），缺乏佐證 |
-| 0–2 | 軟實力偽裝成專長（"溝通協調"） |
-
-**最終分：** `評分 / 10 × 15`
-
-Key constraints: 專長描述 ≤1000 chars，專長特色標籤 max 6。
+Only skip this prompt if custom sections already exist in the resume.
 
 ---
 
-### 證照 (Certifications) — 滿分 4
+## Step 4 — Section Ordering
 
-| 分數（/4） | 標準 |
-|-----------|------|
-| 3.5–4 | 直接對應目標職位且有效；高價值證照 |
-| 2–3 | 相關但部分過期或間接相關 |
-| 1–1.5 | 有證照但與目標職缺無關 |
-| 0 | 缺失（若職位明確要求則列為嚴重不足） |
+Load `references/output-format.md` now (use for this step and Step 5).
 
-**證照價值參考：**
-| 高價值 | 中等價值 | 低附加值 |
-|--------|---------|---------|
-| PMP、CFA、CISSP、AWS/GCP 認證、律師/會計師/醫師執照、JLPT N1/N2、TOEIC 900+ | Google Analytics、Scrum Master、專業技術甲級、TOEIC 750–899 | 電腦基礎檢定、駕照（除非職務必要）、TOEIC <600 |
-
----
-
-### 語文能力 (Language Skills) — 滿分 3
-
-| 分數（/3） | 標準 |
-|-----------|------|
-| 2.5–3 | 程度真實，有佐證（TOEIC 分數、海外學習/工作、外商經歷）；無「三語全精通」 |
-| 1.5–2 | 程度合理，無明顯過度聲稱 |
-| 0.5–1 | 所有語言全填「精通」但無任何佐證 → 可信度紅旗 |
-| 0 | 目標職位明確需要特定語言但缺失 |
-
-佐證加分信號：TOEIC/IELTS/JLPT/HSK 分數、國際公司工作、海外求學 → 各加可信度。
-
----
-
-### 附件 (Attachments) — 滿分 2
-
-| 分數（/2） | 創意/工程職位 | 一般職位 |
-|-----------|------------|---------|
-| 1.8–2 | 作品集最新、有組織、連結有效，清楚展現最佳作品 | 有相關佐證文件（獎狀、媒體報導、著作） |
-| 1–1.5 | 有作品集但過時或不完整 | 有部分文件 |
-| 0–0.5 | 缺失（創意/工程職缺為嚴重缺口） | 缺失（一般職位可接受，不強制扣分） |
-
----
-
-### 專案成就 (Projects & Achievements) — 滿分 8
-
-| 評估維度 | 權重 | 標準（內部評分 0–10） |
-|---------|------|-------------------|
-| 個人貢獻清晰度 | 40% | 9–10: 角色與具體貢獻清楚；5–8: "參與"型，貢獻模糊；0–4: 只有專案名稱 |
-| 量化影響 | 40% | 9–10: 明確前後指標與規模；6–8: 有數字但規模不清；0–5: 無數字 |
-| 時效性與相關性 | 20% | 5 年以上舊案且無近期作品 → 扣 1–2 點；與目標職位不符 → 扣 1–2 點 |
-
-加分：有 live demo、GitHub 連結或已發布作品 → +0.3（上限不超過 8）
-
-**最終分：** `(貢獻×0.4 + 量化×0.4 + 時效×0.2) / 10 × 8`
-
-Key constraints: 專案說明 ≤2000 chars。
-
----
-
-### 自傳 (Autobiography) — 滿分 8
-
-必須包含四個元素：
-1. **背景與起點**（從哪裡來）
-2. **核心能力**（能做什麼，附具體佐證）
-3. **動機與目標**（為何選此職/公司，非套話）
-4. **對公司的價值**（帶來什麼具體貢獻）
-
-| 分數（/8） | 標準 |
-|-----------|------|
-| 7–8 | 四個元素齊全；有具體成就（非其他區塊重複）；針對公司/職位；無模板套語 |
-| 5.5–6.5 | 三個元素；大體具體但含 1–2 段通用敘述 |
-| 4–5 | 兩個元素；讀起來像工作經歷延伸，非補充 |
-| 2–3.5 | 明顯模板（"我是積極負責、勇於接受挑戰的人..."）；零個人化 |
-| 0–1.5 | 一段模糊內容，或空白 |
-
-**紅旗（無論長度都降分）：**
-- 以"我叫XXX，畢業於..."開頭
-- 全篇無任何數字或成就
-- 重複工作經歷（非補充，而是複述）
-- 超過 3500 字的通用內容
-
-Key constraints: 中文 ≤4000 chars，英文 ≤8000 chars。
-
----
-
-### 推薦人 (References) — 滿分 1
-
-| 分數（/1） | 標準 |
-|-----------|------|
-| 0.8–1 | 近期相關職位的直屬主管或資深同事；完整聯絡資訊（姓名、公司、職稱、email、電話） |
-| 0.4–0.7 | 平輩同事或稍微過時的推薦人；部分聯絡資訊 |
-| 0–0.3 | 推薦人關係不清，或聯絡資訊缺失 |
-
----
-
-### 自訂內容 (Custom Sections) — 加分 0–3，不計入基礎 100 分
-
-| 分數（/3） | 標準 |
-|-----------|------|
-| 2.5–3 | 真正差異化內容（學術發表、開源貢獻、演講、重大獎項、有成效的側案）；含富媒體或有效連結 |
-| 1–2 | 增加些許獨特脈絡（小型獎項、社群參與）但影響有限 |
-| 0–0.5 | 大量與工作經歷或專案重疊，重複性高、非補充 |
-
----
-
-### 軟實力綜合評估 (Soft Skills Meta-Score) — 滿分 6
-
-**此區塊不評估個別軟實力聲明，而是從整份履歷角度跨區塊評估三項指標。**
-
----
-
-#### 指標一：量化密度 (Quantification Rate) — 滿分 3
-
-統計**工作經歷 + 專案成就**中，含有具體數字/指標/規模的描述條目佔總條目比例：
-
-| 量化比例 | 分數（/3） |
-|---------|----------|
-| ≥80% | 3 |
-| 60–79% | 2.5 |
-| 40–59% | 1.5 |
-| 20–39% | 0.8 |
-| <20% | 0.3 |
-
-輸出時請附：「共 X 條描述，其中 X 條含量化指標，量化比例 X%」
-
----
-
-#### 指標二：硬實力佔比 (Hard Skill Ratio) — 滿分 2
-
-統計全履歷**所有技能標籤**（個人特色 + 工作技能 + 專長標籤），計算硬技能標籤佔比：
-
-> **硬技能標籤定義：** 工具（Python、Figma、Excel）、業界術語（SEO、Scrum、B2B）、可驗證能力（資料庫設計、英文簡報）
-> **軟技能標籤定義：** 個性描述（積極、負責、細心、溝通協調、抗壓性強）
-
-| 硬技能標籤比例 | 分數（/2） |
-|-------------|----------|
-| ≥70% | 2 |
-| 50–69% | 1.5 |
-| 30–49% | 1 |
-| <30% | 0.3 |
-
-輸出時請附：「共 X 個標籤，其中 X 個為硬技能，佔比 X%」
-
----
-
-#### 指標三：軟實力佐證質量 (Evidence-backed Soft Claims) — 滿分 1
-
-當軟實力聲明出現時，是否有行為或成果佐證？
-
-| 質量 | 分數（/1） |
-|------|----------|
-| 多數軟實力聲明有具體行為佐證（"帶領 5 人跨部門小組，3 個月完成 OO 專案"） | 1 |
-| 部分有佐證，部分是裸聲明 | 0.5 |
-| 全部是裸聲明（"我擅長溝通"）無任何行為佐證 | 0 |
-
-**軟實力綜合最終分：** 三指標加總（最高 6 分）
-
----
-
-## Step 3: Optimization Suggestions
-
-每個**達成率低於 75%** 的區塊，至少提供 2 條具體建議，並在工作經歷/專案成就的建議中附上 XYZ 改寫示範。
+Based on candidate background (from Step 1), recommend optimal 104 section order. Use the ordering templates in `output-format.md` as your starting point, then apply this decision tree to adjust:
 
 ```
-### [區塊名稱] — X/滿分Y（達成率 Z%）
+應屆/新鮮人（< 1 年經驗）？
+├── 是 → 學歷 → 專案成就 → 專長 領頭
+└── 否 → 工作經歷 領頭
 
-**問題：** [具體弱點]
-
-**建議 1：** [具體行動]
-**建議 2：** [具體行動]
-```
-
-### Achievement Rewrite: Google XYZ Formula
-
-工作經歷與專案成就的每條任務型描述，必須套用 XYZ 公式改寫：
-
-> **Accomplished [X] as measured by [Y], by doing [Z]**
-> 中文版：「透過 [Z 方法]，達成 [X 成果]，以 [Y 指標] 衡量」
-
-**改寫流程：**
-1. 識別原句是「任務型」（負責 / 參與 / 協助）還是「成果型」（提升 / 降低 / 達成）
-2. 任務型 → 詢問用戶：「這件事帶來什麼具體成果？有沒有數字？」
-3. 若用戶提供數字 → 直接套入 XYZ 公式輸出改寫版
-4. 若用戶無法提供數字 → 用「估算範圍」替代，並標注 `[待補數字]`
-
-**改寫範例：**
-
-| 原句（任務型） | 改寫後（XYZ 成果型） |
-|--------------|-------------------|
-| 負責社群媒體管理 | 管理 FB/IG 雙平台內容策略，3 個月自然觸及提升 40%、追蹤人數成長 2,000+，透過發文頻率優化與 UGC 活動執行 |
-| 協助行銷預算規劃 | 優化月均 $50k 行銷預算配置，CPA 降低 15% 同時導流量成長 20%，透過 A/B 測試調整渠道比例達成 |
-| 參與客戶服務流程改善 | 推動客服 SOP 重新設計，首次解決率從 62% 提升至 81%，透過客訴分類分析找出 Top 5 重複問題並建立標準回覆庫 |
-
-### Common High-Impact Optimizations
-
-**個人特色 — 從通用到精準:**
-- Weak: 積極、負責、細心
-- Strong: React.js、數據分析、敏捷開發、B2B 業務、英文簡報
-
-**求職條件 — 期望工作內容應反映價值:**
-- Weak: "希望從事行銷相關工作"
-- Strong: "期望以數據驅動的行銷策略協助品牌成長，擅長 SEO/內容行銷，目標協助公司提升 organic traffic"
-
----
-
-## Step 4: Recommend Section Ordering
-
-104 允許自訂區塊順序。依候選人最強資產決定排序。
-
-```
-是否為應屆/新鮮人（< 1 年工作經驗）？
-├── 是 → 以 學歷 → 專案成就 → 專長 領頭
-└── 否 → 以 工作經歷 領頭
-
-目標職位明確需要證照或語文能力？
-├── 是 → 將 證照/語文能力 置於前段（第 3–5 位）
+目標職位明確需要證照或語文？
+├── 是 → 置於前段（第 3–5 位）
 └── 否 → 置於後段（第 6–8 位）
 
 有強力專案成就？
-├── 是 + 技術/創意職缺 → 專案成就 緊接在 工作經歷 之後
-└── 否或不相關 → 專案成就 置於 專長 之後
+├── 是 + 技術/創意職缺 → 緊接工作經歷之後
+└── 否 → 置於專長之後
 
-自傳達成率 ≥75%？
+自傳達成率 ≥ 75%？
 ├── 是 → 置於前段（第 2–3 位）
-└── 否 → 置於後段，或建議先優化
+└── 否 → 後段，或建議先優化
 ```
 
-### Ordering Templates
-
-**資深工作者（3 年以上）：**
-工作經歷 > 求職條件 > 專長 > 專案成就 > 學歷 > 自傳 > 證照 > 語文能力 > 附件 > 推薦人 > 自訂內容
-
-**應屆/新鮮人：**
-學歷 > 專案成就 > 專長 > 求職條件 > 工作經歷 > 語文能力 > 證照 > 自傳 > 附件 > 推薦人 > 自訂內容
-
-**職涯轉換：**
-求職條件 > 專長 > 工作經歷 > 專案成就 > 學歷 > 自傳 > 證照 > 語文能力 > 附件 > 推薦人 > 自訂內容
-
-**創意/設計/作品集職位：**
-附件 > 專案成就 > 工作經歷 > 專長 > 求職條件 > 學歷 > 自傳 > 語文能力 > 證照 > 推薦人 > 自訂內容
-
-Always explain WHY you chose the order, referencing the candidate's specific strengths.
+Explain WHY referencing the candidate's specific strengths.
 
 ---
 
-## Step 5: Output Format
+## Step 5 — Output
 
-```
-## 104 履歷評分報告
-
-### 總覽
-[2–3 句整體印象]
-
-### 各區塊評分
-| 區塊 | 得分 | 滿分 | 達成率 | 優先改善 |
-|------|------|------|--------|---------|
-| 工作經歷 | X | 25 | XX% | ✅/⚠️/❌ |
-| 專長 | X | 15 | XX% | |
-| 基本資料 | X | 10 | XX% | |
-| 學歷 | X | 10 | XX% | |
-| 求職條件 | X | 8 | XX% | |
-| 自傳 | X | 8 | XX% | |
-| 專案成就 | X | 8 | XX% | |
-| 軟實力綜合 | X | 6 | XX% | |
-| 證照 | X | 4 | XX% | |
-| 語文能力 | X | 3 | XX% | |
-| 附件 | X | 2 | XX% | |
-| 推薦人 | X | 1 | XX% | |
-| **基礎總分** | **X** | **100** | **XX%** | |
-| 自訂內容（加分） | X | +3 | | |
-| **含加分總分** | **X** | **103** | **XX%** | |
-
-### 軟實力綜合分析
-| 指標 | 得分 | 滿分 | 備註 |
-|------|------|------|------|
-| 量化密度 | X | 3 | 共X條描述，X條含數字，量化比例X% |
-| 硬實力佔比 | X | 2 | 共X個標籤，X個硬技能，佔比X% |
-| 軟實力佐證 | X | 1 | [裸聲明/部分佐證/有佐證] |
-
-### 詳細建議
-[對達成率 <75% 的各區塊提供建議]
-
-### 建議排序方式
-[排序清單附上原因]
-
-### 下一步行動清單（今日優先執行）
-1. [最高影響力行動]
-2. [次高影響力行動]
-3. [第三高影響力行動]
-```
-
----
-
-## LinkedIn Mode (Secondary)
-
-When the user requests LinkedIn optimization instead of or alongside 104:
-
-- **About section:** Shift to first-person narrative; use Google XYZ formula ("Accomplished X as measured by Y by doing Z")
-- **Headline:** Role + value proposition (not just job title)
-- **Experience:** Bullet points starting with action verbs; every bullet should have a metric
-- **Skills section:** Prioritize skills with endorsements; align with recruiter search terms
-- **Key difference from 104:** LinkedIn rewards storytelling and personal brand; 104 rewards keyword density and structural completeness
+`references/output-format.md` is already loaded. Follow the output template exactly.
