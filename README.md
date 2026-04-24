@@ -49,7 +49,6 @@
 ### 前置需求
 
 - [Claude Code](https://claude.ai/code) CLI 已安裝並登入
-- 已安裝 superpowers plugin（Skill 系統依賴此 plugin）
 
 ### 方式一：從本 repo 安裝（推薦）
 
