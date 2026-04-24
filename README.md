@@ -2,6 +2,8 @@
 
 > 一個專為台灣求職市場打造的 Claude Code Skill，讓 AI 像資深 HR 顧問一樣幫你精準評分、改寫、優化你的 104 履歷。
 
+📖 **介紹文：**[用 AI Agent 駭進 104 履歷系統](https://aiprogram.site/blog/hacking-104-resume-with-ai-agent)
+
 ---
 
 ## 目錄
