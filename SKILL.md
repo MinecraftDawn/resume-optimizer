@@ -1,9 +1,17 @@
 ---
 name: resume-optimizer
-description: Use whenever a user shares or describes a 104 履歷 (resume) and wants it reviewed, scored, or improved — even if they only paste a fragment or describe it verbally. Triggers on: 104履歷, 履歷優化, 幫我看履歷, 履歷分析, 履歷打分, resume review Taiwan, 104 profile, 幫我改履歷, 我的履歷怎麼樣. Also applies to LinkedIn profile optimization as a secondary mode. Use this skill proactively whenever any resume content appears in the conversation, even without an explicit request for scoring.
+description: >
+  Use whenever a user shares or describes a 104 履歷 (resume) or LinkedIn profile and wants it
+  reviewed, scored, or improved — even if they only paste a fragment or describe it verbally.
+  Triggers on: 104履歷, 履歷優化, 幫我看履歷, 履歷分析, 履歷打分, resume review Taiwan, 104 profile,
+  幫我改履歷, 我的履歷怎麼樣, LinkedIn優化, LinkedIn個人頁面, 幫我看LinkedIn, LinkedIn profile
+  optimization, LinkedIn分析, 幫我改LinkedIn, LinkedIn怎麼填, 如何優化LinkedIn, LinkedIn加分.
+  Also applies when user wants dual-platform (104 + LinkedIn) optimization.
+  Use this skill proactively whenever any resume or LinkedIn profile content appears in the
+  conversation, even without an explicit request for scoring.
 ---
 
-# Resume Optimizer — 104 台灣市場
+# Resume Optimizer — 104 & LinkedIn 台灣市場
 
 Evaluate a 104 resume with **weighted section scores** reflecting real hiring impact in Taiwan. Produce specific optimization suggestions, XYZ achievement rewrites, JD keyword gap analysis, and an optimal section ordering.
 
@@ -21,7 +29,11 @@ Load these files on demand — do NOT load all at once:
 | `references/output-format.md` | Entering Step 4 (always load) | Full report template, scoring table, ordering templates, status icons, action checklist format |
 | `references/salary-benchmarks.md` | Step 2 且求職條件含薪資期望 | 台灣各職類月薪基準，依職類與年資查詢 |
 | `references/industry-profiles.md` | Step 2 且目標職缺產業可識別 | 產業別高價值關鍵字清單與評分側重調整 |
-| `references/linkedin-mode.md` | User requests LinkedIn optimization | Headline/About/Experience/Skills format for LinkedIn |
+| `references/linkedin-mode.md` | Entering Step L1 or 雙平台 routing | LinkedIn 與 104 差異、各區塊優化概覽、雙平台策略 |
+| `references/linkedin-format.md` | Entering Step L1 (always load for LinkedIn) | LinkedIn 欄位清單、充足標準、缺失處理規則 |
+| `references/linkedin-scoring.md` | Entering Step L2 (always load for LinkedIn) | LinkedIn 各區塊評分 rubric，總分 100 |
+| `references/linkedin-suggestions.md` | Entering Step L3 (always load for LinkedIn) | Headline/About/Experience 改寫模板、JD Gap 分析格式 |
+| `references/linkedin-output.md` | Entering Step L4 (always load for LinkedIn) | LinkedIn 報告模板、狀態圖示、雙平台一致性提醒 |
 
 ---
 
@@ -29,15 +41,25 @@ Load these files on demand — do NOT load all at once:
 
 Before anything else, ask:
 
-> 「在開始分析之前，請問兩件事：
-> 1. 這是第一次分析，還是你已經有上一份評分報告想對比改善成效？
-> 2. 你目前的求職目標是哪一種？
+> 「在開始分析之前，請問三件事：
+> 1. 你想優化哪個平台？
+>    (104) 只分析 104 履歷
+>    (LI)  只分析 LinkedIn 個人頁面
+>    (雙平台) 104 + LinkedIn 都要分析
+> 2. 這是第一次分析，還是你已經有上一份評分報告想對比改善成效？
+> 3. 你目前的求職目標是哪一種？
 >    (A) 主動求職中，已有特定目標職缺（有 JD）
 >    (B) 主動求職中，還在探索方向（沒有特定 JD）
 >    (C) 被動觀望，評估轉職可能性
 >    (D) 職涯轉換（目標產業/職能與現職不同）
 >    (E) 留在同產業，但希望往上晉升或加薪」
 
+**平台路由：**
+- 用戶選 **104** → 繼續現有 Step 1–5 流程
+- 用戶選 **LI（LinkedIn）** → 載入 `references/linkedin-mode.md`，跳至 **LinkedIn Step L1**，跳過 Step 1–5
+- 用戶選 **雙平台** → 先完整執行 Step 1–5（104 流程），完成後告知用戶：「104 分析完成！接下來進行 LinkedIn 增量分析。」，再執行 **LinkedIn Step L1–L4**（增量模式：可重用 104 已收集的工作經歷與目標職缺資訊）（若用戶在 104 流程中途決定只做 LinkedIn，詢問確認後直接跳至 LinkedIn Step L1）
+
+**版本檢查路由：**
 - **第一次** → 繼續 Step 1
 - **有舊報告** → 請用戶貼上舊報告的總分與各區塊分數，記錄後繼續 Step 1；最終輸出時加入「與上次相比」對照欄位
 
@@ -155,3 +177,54 @@ Explain WHY referencing the candidate's specific strengths.
 ## Step 5 — Output
 
 `references/output-format.md` is already loaded. Follow the output template exactly.
+
+---
+
+## LinkedIn Step L1 — 收集 LinkedIn 資料
+
+Load `references/linkedin-mode.md` and `references/linkedin-format.md` now.
+
+請用戶提供 LinkedIn 個人頁面的內容，可以：
+- 截圖或貼上各區塊文字
+- 逐區塊描述現有內容
+
+收到資料後，執行 **LinkedIn Missing Section Audit**（見 `linkedin-format.md` → 欄位清單與充足標準）。
+
+若超過 4 個主要區塊（Headline、About、工作經歷、技能）標記為 ❓，暫停分析，告知用戶：「目前 LinkedIn 資訊不足以進行完整評分，建議逐區塊補充內容。」
+
+並詢問：
+1. **目標職缺：** 有沒有想投遞的職缺 JD？（有的話做 LinkedIn 關鍵字 Gap 分析）
+2. **平台使用方式：** 主動投遞、被動等獵頭、或純粹個人品牌建立？
+3. **候選人背景：** 應屆/新鮮人、有工作經驗、還是正在職涯轉換？（影響評分標準校準）
+
+若為雙平台增量模式，工作經歷內容與目標職缺資訊可直接沿用 104 流程已收集的資料，不需重複詢問。
+
+---
+
+## LinkedIn Step L2 — LinkedIn 評分
+
+Load `references/linkedin-scoring.md` now. 依其 **評分 Rubric** 對每個 LinkedIn 區塊評分。
+
+若求職目標為 E（晉升/加薪），工作經歷評分加重「管理責任描述」的比重（見 `linkedin-scoring.md` → 工作經歷 → Mode E 加權）。
+
+若求職目標為 A（有JD）→ L3 的建議優先以 JD Gap 為核心。
+若求職目標為 B（無JD）→ 技能與 About 的關鍵字廣度優先於 JD 對齊。
+若求職目標為 C（被動觀望）→ 評分客觀呈現，建議聚焦高槓桿低工時的改善項目。
+若求職目標為 D（職涯轉換）→ About 的可遷移技能敘述與 Headline 重塑優先。
+
+---
+
+## LinkedIn Step L3 — LinkedIn 優化建議
+
+Load `references/linkedin-suggestions.md` now. 依其 **建議模板** 對達成率 <75% 的區塊提供具體建議。
+
+- 工作經歷和 About 必含 XYZ 格式改寫範例
+- 若有提供 JD，執行 LinkedIn JD Gap 分析（見 `linkedin-suggestions.md` → LinkedIn JD Gap 分析）
+
+---
+
+## LinkedIn Step L4 — LinkedIn 輸出報告
+
+Load `references/linkedin-output.md` now. 依其 **輸出報告格式** 產生完整報告。
+
+若為雙平台模式，在報告末尾加入「雙平台一致性提醒」區塊（見 `linkedin-output.md` → 雙平台增量分析模式輸出）。

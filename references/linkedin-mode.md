@@ -48,7 +48,7 @@
 
 ---
 
-## Dual-Platform Strategy (104 + LinkedIn)
+## 雙平台差異策略（104 + LinkedIn）
 
 若用戶同時使用兩個平台投遞：
 
