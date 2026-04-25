@@ -34,6 +34,7 @@ Load these files on demand — do NOT load all at once:
 | `references/linkedin-scoring.md` | Entering Step L2 (always load for LinkedIn) | LinkedIn 各區塊評分 rubric，總分 100 |
 | `references/linkedin-suggestions.md` | Entering Step L3 (always load for LinkedIn) | Headline/About/Experience 改寫模板、JD Gap 分析格式 |
 | `references/linkedin-output.md` | Entering Step L4 (always load for LinkedIn) | LinkedIn 報告模板、狀態圖示、雙平台一致性提醒 |
+| `references/platform-conversion.md` | Entering Step C1 (always load for 轉換 mode) | 欄位對照表、逐欄改寫規則、輸出格式（104↔LinkedIn 雙向）|
 
 ---
 
@@ -42,11 +43,13 @@ Load these files on demand — do NOT load all at once:
 Before anything else, ask:
 
 > 「在開始分析之前，請問三件事：
-> 1. 你想優化哪個平台？
->    (104) 只分析 104 履歷
->    (LI)  只分析 LinkedIn 個人頁面
+> 1. 你想做什麼？
+>    (104) 分析/優化 104 履歷
+>    (LI)  分析/優化 LinkedIn 個人頁面
 >    (雙平台) 104 + LinkedIn 都要分析
+>    (轉換) 把現有 A 平台內容轉換為 B 平台格式
 > 2. 這是第一次分析，還是你已經有上一份評分報告想對比改善成效？
+>    （選擇「轉換」者跳過此題）
 > 3. 你目前的求職目標是哪一種？
 >    (A) 主動求職中，已有特定目標職缺（有 JD）
 >    (B) 主動求職中，還在探索方向（沒有特定 JD）
@@ -58,6 +61,7 @@ Before anything else, ask:
 - 用戶選 **104** → 繼續現有 Step 1–5 流程
 - 用戶選 **LI（LinkedIn）** → 載入 `references/linkedin-mode.md`，跳至 **LinkedIn Step L1**，跳過 Step 1–5
 - 用戶選 **雙平台** → 先完整執行 Step 1–5（104 流程），完成後告知用戶：「104 分析完成！接下來進行 LinkedIn 增量分析。」，再執行 **LinkedIn Step L1–L4**（增量模式：可重用 104 已收集的工作經歷與目標職缺資訊）（若用戶在 104 流程中途決定只做 LinkedIn，詢問確認後直接跳至 LinkedIn Step L1）
+- 用戶選 **轉換** → 跳至 **Conversion Step C0**，跳過 Step 1–5 和 LinkedIn Steps
 
 **版本檢查路由：**
 - **第一次** → 繼續 Step 1
@@ -228,3 +232,67 @@ Load `references/linkedin-suggestions.md` now. 依其 **建議模板** 對達成
 Load `references/linkedin-output.md` now. 依其 **輸出報告格式** 產生完整報告。
 
 若為雙平台模式，在報告末尾加入「雙平台一致性提醒」區塊（見 `linkedin-output.md` → 雙平台增量分析模式輸出）。
+
+---
+
+## Conversion Step C0 — 確認轉換方向
+
+Load `references/platform-conversion.md` now.
+
+詢問用戶：
+
+> 「請問你要把哪個平台的內容轉換到哪個平台？
+> (A) 104 履歷 → LinkedIn 個人頁面
+> (B) LinkedIn 個人頁面 → 104 履歷」
+
+記錄轉換方向後進入 C1。
+
+---
+
+## Conversion Step C1 — 收集來源平台內容
+
+根據 C0 選擇的來源平台，請用戶提供內容：
+
+**若來源為 104：**
+請用戶上傳 104 履歷 PDF 或貼上所有欄位文字（個人簡介、個人特色、工作經歷、學歷、專案成就、證照、語文能力、自傳、求職條件、附件說明）。
+
+**若來源為 LinkedIn：**
+請用戶逐區塊貼上 LinkedIn 內容（Headline、About、每份工作經歷 + 技能標籤、教育背景、專案、技能清單、證照、語言、Featured 說明）。
+
+收到後，快速確認是否有欄位明顯缺失，若有則提示用戶補充，再繼續。
+
+---
+
+## Conversion Step C2 — 欄位對照審計
+
+依據 `platform-conversion.md` → **欄位對照表**（A 或 B 方向），逐欄標記：
+- 🟢 直接搬移（幾乎不需改動）
+- ⚠️ 需改寫（語氣/長度/格式需調整）
+- ❌ 需新建（來源平台無對應欄位）
+- ℹ️ 操作說明（無法直接轉換，需在平台手動設定）
+
+向用戶簡短報告：「我將為你轉換 X 個欄位（直接搬移 N 個、改寫 N 個、新建 N 個）。」
+
+---
+
+## Conversion Step C3 — 逐欄轉換
+
+依據 `platform-conversion.md` → **逐欄改寫規則**，按欄位複雜度順序執行：
+
+1. 先處理 ⚠️ 需改寫的欄位（語氣轉換、長度調整）
+2. 再處理 ❌ 需新建的欄位（Headline 或求職條件）
+3. 最後整理 🟢 直接搬移的欄位（確認格式）
+
+每個欄位產出「可直接貼入目標平台」的完整文字。
+
+---
+
+## Conversion Step C4 — 輸出轉換結果
+
+依據 `platform-conversion.md` → **輸出格式** 與欄位輸出順序，產生完整轉換報告。
+
+報告末尾加入「轉換品質提醒」（見 `platform-conversion.md` → D. 轉換品質提醒）。
+
+完成後詢問用戶：「轉換完成！你是否希望我對目標平台的內容進行評分，確認各區塊達成率？」
+- 是 → 若目標為 LinkedIn：執行 LinkedIn Step L2–L4；若目標為 104：執行 Step 2–5
+- 否 → 結束
