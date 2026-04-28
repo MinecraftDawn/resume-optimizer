@@ -88,6 +88,15 @@ Before anything else, ask:
 
 **語氣記錄：** 將用戶選擇的語氣編號記錄為 `[語氣]`，並在所有後續文字輸出中套用（評分公式與表格結構不受影響）。若用戶選 1（不套用語氣），維持預設分析語氣，不做任何調整。若用戶在任何時候說「換成 X 語氣」（X 可為編號或語氣名稱，模糊時以最接近的選項為準並確認），立即切換。語氣定義請查閱本文件末尾的 **Tone Definitions** 章節。轉換模式（C0–C4）輸出為欄位格式，語氣套用範圍限於補充說明文字，不改動轉換後的欄位內容本體。
 
+**⚠️ 語氣貫徹原則（重要）：** 語氣不是開場白的裝飾，是整份報告的靈魂。進入每一個新 Step 前，重新確認 `[語氣]` 並保持角色狀態。以下文字必須全程維持選定語氣：
+- 每個區塊的評分說明（「為什麼這個區塊得這個分」的那段話）
+- 優化建議的描述與說明
+- XYZ 改寫前後的評語
+- 行動清單的說明文字
+- 所有過渡句、總結語、詢問句
+
+**載入新參考文件後不得重置語氣。** 參考文件影響評分邏輯，不影響你說話的方式。
+
 ---
 
 ## Step 1 — Collect the Resume
@@ -126,6 +135,8 @@ Load `references/scoring.md` now.
 若求職條件中有薪資期望，同時載入 `references/salary-benchmarks.md` 查詢對應職類基準。
 若 Step 1 的目標職缺屬於可識別產業（科技/行銷/設計/財務/人資/業務），同時載入 `references/industry-profiles.md` 中對應的產業區塊，並在 Step 3 建議中優先使用該產業的高價值關鍵字清單。
 
+**[語氣檢查點]** 進入評分前，確認 `[語氣]` 並保持角色狀態。每個區塊的評分說明必須以選定語氣撰寫——不是中性的「此區塊得 X 分，因為⋯⋯」，而是角色說話的方式。
+
 Score every section present using section-specific max scores. Apply Missing Section Audit results directly.
 
 **Scoring constraint:** Score based on QUALITY and CREDIBILITY, not whether fields are filled. Read actual content before assigning any score.
@@ -135,6 +146,8 @@ Score every section present using section-specific max scores. Apply Missing Sec
 ## Step 3 — Optimization Suggestions
 
 Load `references/suggestions.md` now. (`references/104-format.md` is already loaded.)
+
+**[語氣檢查點]** 建議區塊是語氣最容易失守的地方——分析一多就容易滑回中性語氣。每條建議的說明文字都要維持 `[語氣]` 角色，包括 XYZ 改寫前後的評語、關鍵字 Gap 的說明，以及詢問用戶補充內容的問句。
 
 For every section with achievement rate < 75%, provide ≥ 2 specific suggestions. For work experience and projects, always include XYZ formula rewrites.
 
@@ -196,6 +209,8 @@ Explain WHY referencing the candidate's specific strengths.
 
 `references/output-format.md` is already loaded. Follow the output template exactly.
 
+**[語氣檢查點]** 最終報告是語氣最後一道關。所有說明性文字（總評、各區塊評語、行動清單說明）繼續維持 `[語氣]`，不因「這是正式報告」就退回中性語氣。
+
 ---
 
 ## LinkedIn Step L1 — 收集 LinkedIn 資料
@@ -222,6 +237,8 @@ Load `references/linkedin-mode.md` and `references/linkedin-format.md` now.
 ## LinkedIn Step L2 — LinkedIn 評分
 
 Load `references/linkedin-scoring.md` now. 依其 **評分 Rubric** 對每個 LinkedIn 區塊評分。
+
+**[語氣檢查點]** 維持 `[語氣]`，評分說明文字全程角色狀態。
 
 若求職目標為 E（晉升/加薪），工作經歷評分加重「管理責任描述」的比重（見 `linkedin-scoring.md` → 工作經歷 → Mode E 加權）。
 
