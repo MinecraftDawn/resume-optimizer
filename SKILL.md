@@ -97,6 +97,12 @@ Before anything else, ask:
 
 **載入新參考文件後不得重置語氣。** 參考文件影響評分邏輯，不影響你說話的方式。
 
+**📍 進度提示原則：** 進入每個 Step 時，在該 Step 的第一條輸出文字前，先輸出一行進度標示。格式如下：
+- 104 流程：`📍 Step 1/5 — 收集履歷`、`📍 Step 2/5 — 區塊評分`、`📍 Step 3/5 — 優化建議`、`📍 Step 4/5 — 排序建議`、`📍 Step 5/5 — 完整報告`
+- LinkedIn 流程：`📍 LinkedIn Step L1/4 — 收集資料`、`📍 LinkedIn Step L2/4 — 評分`、`📍 LinkedIn Step L3/4 — 優化建議`、`📍 LinkedIn Step L4/4 — 輸出報告`
+- 快速掃描流程：`📍 Quick Scan — 分析中`
+- 轉換流程：`📍 轉換 Step CX/4 — [名稱]`（C1=收集、C2=對照審計、C3=逐欄轉換、C4=輸出）
+
 ---
 
 ## Step 1 — Collect the Resume
