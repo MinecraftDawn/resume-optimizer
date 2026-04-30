@@ -253,6 +253,8 @@ Load `references/linkedin-scoring.md` now. 依其 **評分 Rubric** 對每個 Li
 
 Load `references/linkedin-suggestions.md` now. 依其 **建議模板** 對達成率 <75% 的區塊提供具體建議。
 
+**[語氣檢查點]** LinkedIn 建議區塊與 Step 3 同樣是語氣最容易滑落的地方。每條建議的說明文字、XYZ 改寫評語、JD Gap 說明，以及向用戶詢問的問句，全程維持 `[語氣]` 角色。
+
 - 工作經歷和 About 必含 XYZ 格式改寫範例
 - 若有提供 JD，執行 LinkedIn JD Gap 分析（見 `linkedin-suggestions.md` → LinkedIn JD Gap 分析）
 
