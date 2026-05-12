@@ -18,6 +18,7 @@ HEADERS = {
     ),
     "Referer": "https://www.104.com.tw/jobs/search/",
     "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7",
 }
 
 
@@ -141,5 +142,5 @@ if __name__ == "__main__":
         main()
     except Exception as exc:
         _log(f"Fatal: {exc}")
-        print(json.dumps({"status": "error", "errors": [str(exc)]}), ensure_ascii=False)
+        print(json.dumps({"status": "error", "errors": [str(exc)]}, ensure_ascii=False))
         sys.exit(1)

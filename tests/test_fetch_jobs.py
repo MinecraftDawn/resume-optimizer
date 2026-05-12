@@ -167,3 +167,16 @@ def test_stdout_single_json_line(capsys):
     lines = captured.out.strip().splitlines()
     assert len(lines) == 1
     json.loads(lines[0])  # must not raise
+
+
+def test_main_block_ensure_ascii_in_json_dumps():
+    """確認 __main__ 的 ensure_ascii=False 在 json.dumps 內，不是 print 的參數。"""
+    import inspect
+    import scripts.fetch_jobs as fj
+    src = inspect.getsource(fj)
+    # 找到 __main__ 區塊的 ensure_ascii 用法
+    # 正確：json.dumps({...}, ensure_ascii=False))
+    # 錯誤：json.dumps({...}), ensure_ascii=False)
+    import re
+    bad_pattern = r'json\.dumps\([^)]+\)\s*,\s*ensure_ascii=False'
+    assert not re.search(bad_pattern, src), "ensure_ascii=False must be inside json.dumps(), not print()"
