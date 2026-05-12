@@ -65,7 +65,7 @@ def score_title(job_title: str, resume_title: str) -> int:
             return 14
         return 8
     if jc or rc:
-        return 8
+        return 5  # 只有一方有職類，跨域可能性較低
     return 2
 
 
@@ -97,7 +97,7 @@ def score_skills(resume_skills: list, jd_required: list, jd_preferred: list) -> 
 def score_exp(resume_exp: float, jd_exp) -> int:
     if jd_exp is None:
         return 20
-    if resume_exp > jd_exp + 5:
+    if resume_exp >= jd_exp + 5:
         return 16
     if resume_exp >= jd_exp:
         return 20
@@ -109,6 +109,7 @@ def score_exp(resume_exp: float, jd_exp) -> int:
 
 
 def score_salary(resume_salary, jd_min, jd_max) -> int:
+    # jd_min 保留供未來下限檢查；目前邏輯只看 jd_max 上限
     if resume_salary is None or jd_min is None or jd_max is None:
         return 7
     if resume_salary <= jd_max:
@@ -131,9 +132,11 @@ def score_industry_location(resume_industry, jd_industry, resume_location: str, 
         industry = 7 if (ri_tech and ji_tech) else 4
 
     # 地區（5 分）
-    rl = resume_location.strip()
-    jl = jd_location.strip()
-    if rl in ("全台", "不限", "遠端") or "remote" in rl.lower() or "remote" in jl.lower():
+    rl = (resume_location or "").strip()
+    jl = (jd_location or "").strip()
+    if not rl or not jl:
+        location = 3  # 資訊不足，給中位數
+    elif rl in ("全台", "不限", "遠端") or "remote" in rl.lower() or "remote" in jl.lower():
         location = 5
     elif rl == jl:
         location = 5
@@ -201,7 +204,7 @@ def main() -> None:
         print(json.dumps(result, ensure_ascii=False))
     except Exception as exc:
         _log(f"ERROR: {exc}")
-        print(json.dumps({"status": "error", "errors": [str(exc)]}), ensure_ascii=False)
+        print(json.dumps({"status": "error", "errors": [str(exc)]}, ensure_ascii=False))
         sys.exit(1)
 
 

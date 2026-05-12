@@ -41,8 +41,9 @@ def test_title_same_engineer_category():
 
 
 def test_title_cross_domain():
-    out = run(**{**BASE, "resume_title": "行銷企劃"})
-    assert out["scores"]["title"] <= 8
+    out = run(**{**BASE, "resume_title": "行政助理"})
+    # 行政助理 無 category、前端工程師(engineer) 有 category — 只有一方有職類
+    assert out["scores"]["title"] == 5
 
 
 # ── 技能重疊 ────────────────────────────────────────────────────────────────
@@ -122,6 +123,12 @@ def test_exp_shortage_over_2_years():
 
 def test_exp_overqualified():
     out = run(**{**BASE, "jd_exp": 1, "resume_exp": 8.0})
+    assert out["scores"]["exp"] == 16
+
+
+def test_exp_exactly_5_years_over():
+    """恰好超過 5 年應視為 overqualified（>= 改為 >=）。"""
+    out = run(**{**BASE, "jd_exp": 1, "resume_exp": 6.0})
     assert out["scores"]["exp"] == 16
 
 
