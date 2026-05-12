@@ -35,6 +35,8 @@ Load these files on demand — do NOT load all at once:
 | `references/linkedin-suggestions.md` | Entering Step L3 (always load for LinkedIn) | Headline/About/Experience 改寫模板、JD Gap 分析格式 |
 | `references/linkedin-output.md` | Entering Step L4 (always load for LinkedIn) | LinkedIn 報告模板、狀態圖示、雙平台一致性提醒 |
 | `references/platform-conversion.md` | Entering Step C1 (always load for 轉換 mode) | 欄位對照表、逐欄改寫規則、輸出格式（104↔LinkedIn 雙向）|
+| `references/jd-crawl-guide.md` | Entering Step J2 (always load for 適配 mode) | 104 搜尋 URL 格式、WebFetch 解析指引、fallback 處理規則 |
+| `references/jd-fit-scoring.md` | Entering Step J3 (always load for 適配 mode) | 五維度適配評分 rubric、比較表輸出模板 |
 
 ---
 
@@ -49,6 +51,7 @@ Before anything else, ask:
 >    (雙平台) 104 + LinkedIn 都要分析
 >    (轉換) 把現有 A 平台內容轉換為 B 平台格式
 >    (快速) 只要 Top 3 最高槓桿建議，不需要完整報告
+>    (適配) 分析履歷與多個 104 職缺的匹配度，找出最適合投遞的職缺
 > 2. 這是第一次分析，還是你已經有上一份評分報告想對比改善成效？
 >    （選擇「轉換」者跳過此題）
 > 3. 你目前的求職目標是哪一種？
@@ -76,6 +79,7 @@ Before anything else, ask:
 - 用戶選 **雙平台** → 先完整執行 Step 1–5（104 流程），完成後告知用戶：「104 分析完成！接下來進行 LinkedIn 增量分析。」，再執行 **LinkedIn Step L1–L4**（增量模式：可重用 104 已收集的工作經歷與目標職缺資訊）（若用戶在 104 流程中途決定只做 LinkedIn，詢問確認後直接跳至 LinkedIn Step L1）
 - 用戶選 **轉換** → 跳至 **Conversion Step C0**，跳過 Step 1–5 和 LinkedIn Steps
 - 用戶選 **快速** → 跳至 **Quick Scan 流程**，跳過 Step 1–5
+- 用戶選 **適配** → 跳至 **JD Fit Analysis Step J1**，跳過 Step 1–5 主流程（J1 會獨立收集履歷資訊）
 
 **版本檢查路由：**
 - **第一次** → 繼續 Step 1
@@ -322,6 +326,122 @@ Step 5 報告輸出完成後，詢問用戶：
 ```
 
 **注意：** Quick Scan 輸出的敘述文字同樣套用 `[語氣]`。
+
+---
+
+## JD Fit Analysis Step J1 — 收集履歷與求職條件
+
+Load `references/104-format.md` now.
+
+請用戶提供履歷（PDF 或文字貼入），以及以下資訊：
+
+1. **目標職稱 / 職類**：你想找哪種職位？（如：前端工程師、行銷企劃、產品經理）
+2. **工作地點偏好**：偏好哪個縣市？（或全台、遠端不限）
+3. **薪資期望**：月薪期望區間（如 4–6 萬）；若履歷已有求職條件欄位，直接沿用。
+
+收到履歷後，提取以下資訊供後續步驟使用：
+
+- `[JF_職稱]`：目標職稱（字串）
+- `[JF_地區碼]`：對應 `jd-crawl-guide.md` 的地區碼
+- `[JF_薪資]`：月薪期望（數值）
+- `[JF_技能池]`：從履歷提取的技能集合（見 jd-fit-scoring.md → 技能池提取方法）
+- `[JF_年資]`：總工作年資（年，一位小數）
+
+若用戶已有特定 JD 連結或文字（1–5 筆），詢問確認：
+
+> 「你有特定想分析的職缺嗎？可以直接貼入 104 職缺連結或 JD 文字。若沒有，我會根據你的求職條件幫你搜尋。」
+
+- 有特定職缺 → 記錄後直接進入 J3（跳過 J2 搜尋步驟）
+- 無特定職缺 → 繼續 J2
+
+---
+
+## JD Fit Analysis Step J2 — 抓取 104 職缺
+
+Load `references/jd-crawl-guide.md` now.
+
+依據 `[JF_職稱]`、`[JF_地區碼]`、`[JF_薪資]` 執行以下 Bash 指令（在 Claude Code 對話中使用 Bash tool）：
+
+```bash
+source .venv/bin/activate && python scripts/fetch_jobs.py \
+  --keyword "[JF_職稱]" \
+  --area [JF_地區碼] \
+  [--salary-min X --salary-max Y]
+```
+
+**處理回傳的 JSON：**
+- `status=success` → 從 `jobs` 陣列提取職缺清單（title、company、salary、location），呈現給用戶選擇 3–5 筆
+- `status=need_fallback` → 告知用戶：「104 頁面無法直接存取，請打開以下連結，把想分析的職缺 URL 或 JD 文字貼回給我：[search_url]」，用戶貼入後直接進入 J3
+- `status=error` → 告知用戶發生錯誤，請手動貼入 JD 文字後直接進入 J3
+
+用戶選擇後，將選定職缺的 `jd_text`、`skill_tags`、`exp_required` 保留在 context 供 J3 使用。
+
+---
+
+## JD Fit Analysis Step J3 — 適配度評分
+
+Load `references/jd-fit-scoring.md` now.
+
+**[語氣檢查點]** 維持 `[語氣]`，所有評分說明與推薦文字全程角色狀態。
+
+對每筆選定 JD，依以下流程計算分數：
+
+**1. Claude 從 jd_text 提取（直接讀 context，無需 API call）：**
+- `jd_required`：必要技能清單（JSON array，例：`["React","TypeScript","Git"]`）
+- `jd_preferred`：加分技能清單（JSON array）
+- `jd_exp`：要求年資數字（若無標示則省略此參數）
+- `jd_salary_min` / `jd_salary_max`：薪資範圍千元（若「面議」則省略）
+- `jd_industry`：產業別
+- `jd_location`：工作地點
+
+**2. 執行 score_fit.py（Bash tool）：**
+
+```bash
+source .venv/bin/activate && python scripts/score_fit.py \
+  --job-title "[JD職稱]" \
+  --jd-required '[...]' \
+  --jd-preferred '[...]' \
+  [--jd-exp N] \
+  [--jd-salary-min X --jd-salary-max Y] \
+  --jd-industry "[產業]" \
+  --jd-location "[地點]" \
+  --resume-title "[JF_職稱]" \
+  --resume-skills '[JF_技能池]' \
+  --resume-exp [JF_年資] \
+  [--resume-salary N] \
+  [--resume-industry "[產業]"] \
+  --resume-location "[JF_地區]"
+```
+
+收到 `status=success` → 記錄 `scores` 與 `skill_detail`，繼續下一筆 JD。
+收到 `status=error` → 記錄錯誤，以中位數（各維度取中）代替該筆分數。
+
+所有分數收集完畢後，依 `total` 降冪排序，進入 J4。
+
+---
+
+## JD Fit Analysis Step J4 — 輸出適配報告
+
+`references/jd-fit-scoring.md` 已載入。依其 **輸出格式** 產生完整報告。
+
+**[語氣檢查點]** 報告所有說明文字、推薦理由、技能 Gap 建議全程維持 `[語氣]`。
+
+輸出結構：
+1. 適配比較表（所有選定 JD 的五維度分數一覽）
+2. 前 3 名詳細分析（含技能 Gap 清單、投遞建議）
+3. 技能補強行動清單（彙整所有 JD 共同缺少的高頻技能，優先補強）
+
+完成後詢問：
+
+> 「適配分析完成！接下來你可以：
+> 1. 針對某個職缺的 JD 進行完整履歷評分（104 完整版，含排序建議）
+> 2. 讓我幫你改寫工作經歷，補強 Gap 技能的描述
+> 3. 結束分析
+> 你想怎麼繼續？」
+
+- 選 1 → 以 J1 已收集的履歷資訊為基礎，從 Step 2 開始執行（跳過 Step 1 收集）；目標職缺自動設為用戶選定的職缺
+- 選 2 → 針對技能補強行動清單的 Top 3 技能，提供 XYZ 改寫建議（沿用 `references/suggestions.md` 格式）
+- 選 3 → 結束
 
 ---
 
