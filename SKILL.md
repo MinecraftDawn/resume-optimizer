@@ -356,67 +356,146 @@ Load `references/104-format.md` now.
 
 ---
 
-## JD Fit Analysis Step J2 — 抓取 104 職缺
+## JD Fit Analysis Step J2 — 抓取 104 職缺（分頁 + 自動評分）
 
 Load `references/jd-crawl-guide.md` now.
 
-依據 `[JF_職稱]`、`[JF_地區碼]`、`[JF_薪資]` 執行以下 Bash 指令（在 Claude Code 對話中使用 Bash tool）：
+**執行前準備：**
+
+1. **標題關鍵詞過濾（`[JF_標題過濾]`）：** 從 `[JF_職稱]` 中提取核心技術詞作為 `--title-filter` 參數，確保搜尋結果與求職方向相符。提取規則：
+   - 「AI工程師」→ `AI,人工智慧`
+   - 「前端工程師」→ `前端,frontend`
+   - 「後端工程師」→ `後端,backend`
+   - 「全端工程師」→ `全端,fullstack`
+   - 「資料科學家」→ `資料,data`
+   - 「產品經理」→ `產品,PM`
+   - 其他職稱 → 取職稱中最具辨識度的 1–2 個詞（去掉泛用詞如「工程師」「專員」）
+
+2. **詢問面議排除偏好：** 執行搜尋前，先詢問用戶：
+   > 「搜尋結果中可能包含薪資完全面議（未揭露任何薪資資訊）的職缺，請問是否要排除這些職缺？」
+   - 是 → 加入 `--exclude-negotiable` 旗標
+   - 否 → 不加（面議職缺一併顯示）
+
+3. **顯示即將套用的篩選條件（執行前告知用戶）：**
+   > 「即將使用以下條件搜尋職缺：
+   > - 職稱關鍵字：[JF_職稱]
+   > - 地區：[JF_地區] 
+   > - 薪資範圍：[若有填寫，顯示「月薪 X–Y 萬」；否則顯示「不限」]
+   > - 標題過濾：[JF_標題過濾]
+   > - 排除面議：[是/否]
+   > 
+   > 正在搜尋第 [N] 頁...」
+
+**執行 fetch_jobs.py（每頁 10 筆）：**
 
 ```bash
 source .venv/bin/activate && python scripts/fetch_jobs.py \
   --keyword "[JF_職稱]" \
   --area [JF_地區碼] \
-  [--salary-min X --salary-max Y]
+  --title-filter "[JF_標題過濾]" \
+  [--salary-min X --salary-max Y] \
+  [--exclude-negotiable] \
+  --limit 10 \
+  --page [當前頁碼，初始為 1]
 ```
 
 **處理回傳的 JSON：**
-- `status=success` → 從 `jobs` 陣列提取職缺清單（title、company、salary、location），呈現給用戶選擇 3–5 筆
+- `status=success` → 對 `jobs` 陣列中每筆職缺立即執行自動評分（見下方）
 - `status=need_fallback` → 告知用戶：「104 頁面無法直接存取，請打開以下連結，把想分析的職缺 URL 或 JD 文字貼回給我：[search_url]」，用戶貼入後直接進入 J3
 - `status=error` → 告知用戶發生錯誤，請手動貼入 JD 文字後直接進入 J3
 
-用戶選擇後，將選定職缺的 `jd_text`、`skill_tags`、`exp_required` 保留在 context 供 J3 使用。
+**自動評分每筆職缺：**
+
+`status=success` 後，對 `jobs` 陣列中每筆職缺，從 `jd_text` 與 `skill_tags` 提取參數並執行 score_fit.py：
+
+- `jd_required`：從 skill_tags 取前半（較明確的技術標籤）+ jd_text 中「必要」「N年以上」的技能
+- `jd_preferred`：其餘 skill_tags + jd_text 中「加分」「優先」的技能
+- `jd_exp`：從 exp_required 欄位解析數字（如「2年以上」→ 2.0）；若無則省略
+- `jd_salary_min` / `jd_salary_max`：從 salary 欄位解析（「月薪 40,000–60,000 元」→ min=40, max=60；面議 → 省略）
+- `jd_location`：直接使用 location 欄位
+
+```bash
+source .venv/bin/activate && python scripts/score_fit.py \
+  --job-title "[職缺職稱]" \
+  --jd-required '[...]' \
+  --jd-preferred '[...]' \
+  [--jd-exp N] \
+  [--jd-salary-min X --jd-salary-max Y] \
+  --jd-location "[location欄位]" \
+  --resume-title "[JF_職稱]" \
+  --resume-skills '[JF_技能池]' \
+  --resume-exp [JF_年資] \
+  [--resume-salary N] \
+  --resume-location "[JF_地區]"
+```
+
+對每筆：`status=success` → 記錄 `scores` 與 `skill_detail`；`status=error` → 各維度以中位數代入。
+所有 10 筆評分完成後，依 `total` 降冪排序，進入**分頁輸出**。
+
+**分頁輸出格式（10 筆一頁）：**
+
+```
+📍 職缺搜尋結果（第 N 頁）
+
+篩選條件：職稱「[keyword]」｜地區：[地區]｜薪資：[薪資範圍或「不限」]｜[排除面議：是/否]
+
+| # | 職稱 | 公司 | 薪資 | 地點 | 適配分 | 主要技能缺口 |
+|---|------|------|------|------|--------|------------|
+| 1 | [[職稱]](URL) | [公司] | [薪資] | [地點] | 🟢 XX/100 | [missing_required Top 2，以逗號分隔] |
+| 2 | [[職稱]](URL) | [公司] | [薪資] | [地點] | 🟡 XX/100 | [缺口] |
+| ... |
+```
+
+色階規則：80–100 → 🟢、60–79 → 🟡、40–59 → 🟠、0–39 → 🔴
+
+每筆職稱必須用 Markdown 連結格式 `[[職稱]](URL)` 顯示，讓用戶可直接點擊查看原始 JD。
+
+表格輸出後，緊接以下分頁控制提示：
+
+> 「共顯示第 [N] 頁 10 筆職缺（依適配分高至低排序）。
+> - 輸入職缺**編號**（如 `2` 或 `1,3,5`）→ 取得詳細適配分析
+> - 輸入**下一頁** → 繼續瀏覽下 10 筆
+> - 輸入**上一頁** → 回到上 10 筆
+> - 輸入**選這些** → 以目前頁面分數直接進入適配報告」
+
+**分頁狀態維護：**
+- 記錄 `[J2_當前頁]`（初始為 1），用戶輸入「下一頁」→ +1 並重新執行，「上一頁」→ -1（最小為 1）
+- 已評分的所有頁面職缺保留在 context 中（供 J4 彙整使用）
+- 用戶可跨頁選擇職缺（如「第 1 頁的 2 號和第 2 頁的 5 號」）
 
 ---
 
-## JD Fit Analysis Step J3 — 適配度評分
+## JD Fit Analysis Step J3 — 選定職缺詳細適配分析
 
 Load `references/jd-fit-scoring.md` now.
 
 **[語氣檢查點]** 維持 `[語氣]`，所有評分說明與推薦文字全程角色狀態。
 
-對每筆選定 JD，依以下流程計算分數：
+**注意：** J2 已完成所有選定職缺的評分，此步驟直接展開詳細分析，**不需重新執行 score_fit.py**。
 
-**1. Claude 從 jd_text 提取（直接讀 context，無需 API call）：**
-- `jd_required`：必要技能清單（JSON array，例：`["React","TypeScript","Git"]`）
-- `jd_preferred`：加分技能清單（JSON array）
-- `jd_exp`：要求年資數字（若無標示則省略此參數）
-- `jd_salary_min` / `jd_salary_max`：薪資範圍千元（若「面議」則省略）
-- `jd_industry`：產業別
-- `jd_location`：工作地點
+對每筆用戶選定的職缺，依以下格式輸出詳細分析：
 
-**2. 執行 score_fit.py（Bash tool）：**
+```
+### [色階符號] [職稱] @ [公司]
+🔗 [查看原始 JD](URL)
+**適配分：XX/100**　[████████░░]（每 10 分一格，共 10 格）
 
-```bash
-source .venv/bin/activate && python scripts/score_fit.py \
-  --job-title "[JD職稱]" \
-  --jd-required '[...]' \
-  --jd-preferred '[...]' \
-  [--jd-exp N] \
-  [--jd-salary-min X --jd-salary-max Y] \
-  --jd-industry "[產業]" \
-  --jd-location "[地點]" \
-  --resume-title "[JF_職稱]" \
-  --resume-skills '[JF_技能池]' \
-  --resume-exp [JF_年資] \
-  [--resume-salary N] \
-  [--resume-industry "[產業]"] \
-  --resume-location "[JF_地區]"
+**五維度分數：**
+| 維度 | 得分 | 滿分 | 說明 |
+|------|------|------|------|
+| 職稱符合 | XX | 25 | [一句話說明] |
+| 技能重疊 | XX | 30 | [有 N 項必要技能符合，缺 M 項] |
+| 年資符合 | XX | 20 | [履歷 N 年 vs JD 要求 M 年] |
+| 薪資符合 | XX | 10 | [履歷期望 vs JD 範圍，或「雙方均未揭露」] |
+| 產業/地區 | XX | 15 | [說明] |
+
+**已具備技能：** [matched_required]（必要）　[matched_preferred]（加分）
+**缺少技能：** [missing_required 標記 ❗必要] [missing_preferred 標記 ➕加分]
+
+**投遞建議：** [一句話，含具體策略，如「技能高度符合，薪資期望略高 10%，建議先談再議薪」]
 ```
 
-收到 `status=success` → 記錄 `scores` 與 `skill_detail`，繼續下一筆 JD。
-收到 `status=error` → 記錄錯誤，以中位數（各維度取中）代替該筆分數。
-
-所有分數收集完畢後，依 `total` 降冪排序，進入 J4。
+所有選定職缺展開後，詢問用戶是否繼續瀏覽或進入 J4 完整報告。
 
 ---
 
@@ -424,12 +503,15 @@ source .venv/bin/activate && python scripts/score_fit.py \
 
 `references/jd-fit-scoring.md` 已載入。依其 **輸出格式** 產生完整報告。
 
+**注意：** J2/J3 已完成評分，直接使用 context 中的分數與 skill_detail，不需重新執行任何腳本。
+
 **[語氣檢查點]** 報告所有說明文字、推薦理由、技能 Gap 建議全程維持 `[語氣]`。
 
 輸出結構：
-1. 適配比較表（所有選定 JD 的五維度分數一覽）
-2. 前 3 名詳細分析（含技能 Gap 清單、投遞建議）
-3. 技能補強行動清單（彙整所有 JD 共同缺少的高頻技能，優先補強）
+1. 適配比較表（所有已分析職缺的五維度分數一覽，含可點擊的職缺 URL）
+2. 所有分析職缺連結清單（跨頁彙整，方便用戶一鍵確認原始 JD）
+3. 前 3 名詳細分析（含職缺連結、技能 Gap 清單、投遞建議）
+4. 技能補強行動清單（彙整所有 JD 共同缺少的高頻技能，依「必要技能出現次數」降序排列）
 
 完成後詢問：
 
