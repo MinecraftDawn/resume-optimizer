@@ -47,6 +47,31 @@ https://www.104.com.tw/jobs/search/?keyword={職稱關鍵字}&area={地區碼}&j
 - 例：月薪 4–6 萬 → `&salmin=40&salmax=60`
 - 若不限薪資，省略此參數
 
+### 薪資類型處理（重要）
+
+104 detail API 的 `jobDetail` 有三個薪資欄位，**fetch_jobs.py 已自動處理**：
+
+| 欄位 | 說明 |
+|------|------|
+| `salary` | 預格式化字串，如「年薪1,300,000~2,000,000元」或「月薪40,000~60,000元」 |
+| `salaryType` | 整數代碼：10=時薪、20/30=月薪、60=年薪 |
+| `salaryMin` / `salaryMax` | 原始數值（單位：元）|
+
+fetch_jobs.py 輸出的每筆 job 包含：
+- `salary`：正確標示月薪/年薪的顯示字串
+- `salary_type`：`"月薪"` 或 `"年薪"`
+- `salary_monthly_min` / `salary_monthly_max`：已統一換算為**月薪元**（年薪 ÷ 12）
+
+**在 J2 呼叫 score_fit.py 時，一律使用 `salary_monthly_min` / `salary_monthly_max`** 作為 `--jd-salary-min` / `--jd-salary-max` 參數，不需自行換算：
+
+```bash
+python scripts/score_fit.py \
+  --jd-salary-min [salary_monthly_min] \
+  --jd-salary-max [salary_monthly_max] \
+  --resume-salary [月薪期望，元] \
+  ...
+```
+
 ---
 
 ## B. WebFetch 抓取方式
@@ -96,7 +121,7 @@ https://www.104.com.tw/job/{jobCode}
 - **硬性要求**：學歷、年資（以「N 年以上」識別）
 - **技能關鍵字**：程式語言、工具、認證、方法論名稱
 - **軟性要求**：溝通能力、主動積極等（標記為「軟性條件」，不計入技能評分）
-- **薪資**：若有揭露，記錄為月薪範圍；若為「面議」，記錄為 null
+- **薪資**（僅適用 WebFetch fallback 模式）：若有揭露，記錄為月薪範圍；若為「面議」，記錄為 null。**注意：Playwright 主要流程（fetch_jobs.py）已自動處理薪資類型並輸出 `salary_monthly_min`/`salary_monthly_max`（元），J2 評分直接使用這兩個欄位，不需從文字重新解析。**
 
 ---
 

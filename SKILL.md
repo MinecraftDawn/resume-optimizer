@@ -343,7 +343,7 @@ Load `references/104-format.md` now.
 
 - `[JF_職稱]`：目標職稱（字串）
 - `[JF_地區碼]`：對應 `jd-crawl-guide.md` 的地區碼
-- `[JF_薪資]`：月薪期望（數值）
+- `[JF_薪資]`：月薪期望（單位：元，如 200000 代表月薪 20 萬）
 - `[JF_技能池]`：從履歷提取的技能集合（見 jd-fit-scoring.md → 技能池提取方法）
 - `[JF_年資]`：總工作年資（年，一位小數）
 
@@ -372,9 +372,9 @@ Load `references/jd-crawl-guide.md` now.
    - 其他職稱 → 取職稱中最具辨識度的 1–2 個詞（去掉泛用詞如「工程師」「專員」）
 
 2. **詢問面議排除偏好：** 執行搜尋前，先詢問用戶：
-   > 「搜尋結果中可能包含薪資完全面議（未揭露任何薪資資訊）的職缺，請問是否要排除這些職缺？」
-   - 是 → 加入 `--exclude-negotiable` 旗標
-   - 否 → 不加（面議職缺一併顯示）
+   > 「搜尋結果中可能包含薪資完全面議（無法解析任何薪資數字）的職缺，請問是否要排除這些職缺？」
+   - 是 → 加入 `--exclude-negotiable` 旗標（過濾 `salary_monthly_max == 0` 的職缺）
+   - 否 → 不加（面議職缺一併顯示，薪資維度評分以中位數 7 分代入）
 
 3. **顯示即將套用的篩選條件（執行前告知用戶）：**
    > 「即將使用以下條件搜尋職缺：
@@ -388,16 +388,32 @@ Load `references/jd-crawl-guide.md` now.
 
 **執行 fetch_jobs.py（每頁 10 筆）：**
 
+地區碼說明：`[JF_地區碼]` 依 `jd-crawl-guide.md` 地區碼表填入；**全台灣請傳 `--area ""`（空字串）**。
+
 ```bash
 source .venv/bin/activate && python scripts/fetch_jobs.py \
   --keyword "[JF_職稱]" \
-  --area [JF_地區碼] \
+  --area "[JF_地區碼]" \
   --title-filter "[JF_標題過濾]" \
-  [--salary-min X --salary-max Y] \
   [--exclude-negotiable] \
   --limit 10 \
   --page [當前頁碼，初始為 1]
 ```
+
+**結果不足時的多關鍵字 fallback 策略：**
+
+若 `status=success` 但有效職缺（通過 title-filter 後）< 5 筆，自動追加同義關鍵字搜尋（無需詢問用戶），每次新增 1 個關鍵字，最多共搜 3 次：
+
+| 主關鍵字 | fallback 順序 |
+|----------|--------------|
+| AI工程師 | LLM工程師 → 機器學習工程師 |
+| 前端工程師 | React工程師 → Frontend Engineer |
+| 後端工程師 | Python工程師 → Backend Engineer |
+| 資料工程師 | Data Engineer → 資料分析師 |
+| 產品經理 | PM → 產品規劃 |
+| 其他 | 取職稱主詞 + 「工程師」，或去掉「資深」重試 |
+
+合併多次搜尋結果後，**以 `job_code` 為唯一鍵去重**，再統一進入評分流程。
 
 **處理回傳的 JSON：**
 - `status=success` → 對 `jobs` 陣列中每筆職缺立即執行自動評分（見下方）
@@ -411,8 +427,10 @@ source .venv/bin/activate && python scripts/fetch_jobs.py \
 - `jd_required`：從 skill_tags 取前半（較明確的技術標籤）+ jd_text 中「必要」「N年以上」的技能
 - `jd_preferred`：其餘 skill_tags + jd_text 中「加分」「優先」的技能
 - `jd_exp`：從 exp_required 欄位解析數字（如「2年以上」→ 2.0）；若無則省略
-- `jd_salary_min` / `jd_salary_max`：從 salary 欄位解析（「月薪 40,000–60,000 元」→ min=40, max=60；面議 → 省略）
+- `jd_salary_min` / `jd_salary_max`：直接使用 JSON 的 `salary_monthly_min` / `salary_monthly_max`（單位：元；fetch_jobs.py 已自動換算年薪→月薪）；若兩者均為 0 則省略兩個參數
 - `jd_location`：直接使用 location 欄位
+
+所有薪資參數單位統一為**元**：`--jd-salary-min`、`--jd-salary-max`、`--resume-salary` 皆傳元（如月薪 20 萬 → 200000）。
 
 ```bash
 source .venv/bin/activate && python scripts/score_fit.py \
@@ -420,12 +438,12 @@ source .venv/bin/activate && python scripts/score_fit.py \
   --jd-required '[...]' \
   --jd-preferred '[...]' \
   [--jd-exp N] \
-  [--jd-salary-min X --jd-salary-max Y] \
+  [--jd-salary-min salary_monthly_min --jd-salary-max salary_monthly_max] \
   --jd-location "[location欄位]" \
   --resume-title "[JF_職稱]" \
   --resume-skills '[JF_技能池]' \
   --resume-exp [JF_年資] \
-  [--resume-salary N] \
+  [--resume-salary [JF_薪資]] \
   --resume-location "[JF_地區]"
 ```
 
